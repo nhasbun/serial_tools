@@ -45,6 +45,7 @@ def main():
 
   print("\nSeleccion:")
   seleccion = int(input()) - 1
+  print(" ")
 
   ser = serial.Serial(puertos[seleccion], BAUDRATE, timeout = 1)
   ser.reset_input_buffer() # se limpia buffer por seguridad
@@ -61,7 +62,7 @@ def main():
     n_datos = len(in_buf)
 
     if(n_datos != n_datos_old):
-      print(n_datos, " en el buffer")
+      print(n_datos, " en el buffer", end = '\r')
 
     n_datos_old = n_datos
 
@@ -70,13 +71,15 @@ if __name__ == '__main__':
   try:
     main()
   except KeyboardInterrupt:
-    print("Interrupted")
+    print("\nInterrupted")
     run = False
     t.join()
 
+    print("****************************")
     print("Data MD5 Hash")
     hash_object = hashlib.md5(in_buf)
     print(hash_object.hexdigest())
+    print("****************************")
     try:
       sys.exit(0)
     except SystemExit:
