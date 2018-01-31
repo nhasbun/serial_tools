@@ -12,7 +12,7 @@ import hashlib
 # BAUDRATE = 1041666
 BAUDRATE = 115200
 
-PORT = 'COM3'
+PORT = 'COM17'
 
 in_buf = bytes('', 'utf-8') # buffer de entrada de datos, el limite en windows
 # por driver es 4096 y necesitamos expandir esto
@@ -46,36 +46,51 @@ def main():
 
   # Loop para revisar cantidad de elementos en buffer de userspace
   n_datos_old = 0
+  timeout_count = 0 # Para llevar la cuenta de segundos sin recibir datos
+
   while(True):
     time.sleep(1)
     n_datos = len(in_buf)
 
-    if(n_datos != n_datos_old):
+    if (n_datos != n_datos_old):
       print(n_datos, " en el buffer", end = '\r')
 
+    # rutina que revisa si se terminó la recepción de datos, se genera un
+    # se genera un timeout counter para salir del script
+    elif (n_datos == n_datos_old) & (n_datos > 0):
+      timeout_count += 1
+
     n_datos_old = n_datos
+    if(timeout_count == 3):
+      exit_script()
+
+def exit_script():
+  global run
+  global t
+
+  print("\nInterrupted")
+  run = False
+  t.join()
+
+  print("****************************")
+  print("Data MD5 Hash")
+  hash_object = hashlib.md5(in_buf)
+  print(hash_object.hexdigest())
+  print("****************************")
+
+  file = open("frame_received.jpg", "wb")
+  file.write(in_buf)
+  file.close()
+
+  try:
+    sys.exit(0)
+  except SystemExit:
+    os._exit(0)
 
 # main()
 if __name__ == '__main__':
   try:
     main()
   except KeyboardInterrupt:
-    print("\nInterrupted")
-    run = False
-    t.join()
-
-    print("****************************")
-    print("Data MD5 Hash")
-    hash_object = hashlib.md5(in_buf)
-    print(hash_object.hexdigest())
-    print("****************************")
-
-    file = open("frame_received.jpg", "wb")
-    file.write(in_buf)
-    file.close()
-
-    try:
-      sys.exit(0)
-    except SystemExit:
-      os._exit(0)
+    exit_script()
 
