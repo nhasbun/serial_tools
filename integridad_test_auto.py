@@ -10,7 +10,11 @@ import os
 import hashlib
 
 ## Parameters
-BAUDRATE = 512000
+# BAUDRATE = 1041666
+BAUDRATE = 115200
+
+PORT = 'COM17'
+
 in_buf = bytes('', 'utf-8') # buffer de entrada de datos, el limite en windows
 # por driver es 4096 y necesitamos expandir esto
 
@@ -32,22 +36,8 @@ def worker(dummy, ser):
 def main():
   global in_buf
   global t
-  puertos = serial_ports()
 
-  print("  ")
-  print("****************************")
-  print("Listado de Puertos:")
-
-  ii = 0
-  for puerto in puertos:
-    print(ii + 1, ": ", puertos[ii])
-    ii = ii + 1
-
-  print("\nSeleccion:")
-  seleccion = int(input()) - 1
-  print(" ")
-
-  ser = serial.Serial(puertos[seleccion], BAUDRATE, timeout = 1)
+  ser = serial.Serial(PORT, BAUDRATE, timeout = 1)
   ser.reset_input_buffer() # se limpia buffer por seguridad
   print("** Buffer Cleaned **")
 
