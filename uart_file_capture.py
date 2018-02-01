@@ -11,8 +11,9 @@ import hashlib
 ## Parameters
 # BAUDRATE = 1041666
 BAUDRATE = 115200
+DATASIZE = 26240 # bytes
 
-PORT = 'COM17'
+PORT = 'COM30'
 
 in_buf = bytes('', 'utf-8') # buffer de entrada de datos, el limite en windows
 # por driver es 4096 y necesitamos expandir esto
@@ -26,10 +27,23 @@ def worker(dummy, ser):
   global in_buf
   global run
 
+  reporte_tiempo = True
+  timer_iniciado = False
+
   print("worker starting...")
   while(run):
     in_buf += ser.read(ser.inWaiting())
+    lenbuf = len(in_buf)
+    if (lenbuf > 0 and timer_iniciado == False):
+      t_init = time.clock()
+      timer_iniciado = True
+      print("tic...")
+    if (lenbuf == DATASIZE and reporte_tiempo == True):
+      t_end = time.clock()
+      print("tiempo envio:", t_end - t_init)
+      reporte_tiempo = False
   print("worker stop...")
+
 
 # funcion principal
 def main():
