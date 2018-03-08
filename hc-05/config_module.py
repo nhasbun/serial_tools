@@ -1,11 +1,18 @@
 ## CONFIGURATION SCRIPT FOR HC-05
 # AT command mode is needed for this to work
 
-from serial import Serial
-from time   import sleep
+from serial   import Serial
+from time     import sleep, time, strftime
+from datetime import datetime
+
+
+t = datetime.fromtimestamp(time())
+DEVICE_NAME  = 'TAOTE ' + t.strftime('%d-%m-%Y %H:%M')
+SET_BAUDRATE = 115200
 
 
 def command(uart, command):
+  print(command)
   command = command + '\r\n'
   command = command.encode()
   uart.write(command)
@@ -25,8 +32,8 @@ def main():
 
   command(uart, 'AT')
   command(uart, 'AT+VERSION?')
-  command(uart, 'AT+NAME=TAOTE 0001')
-  command(uart, 'AT+UART=115200,0,0')
+  command(uart, 'AT+NAME=' + DEVICE_NAME)
+  command(uart, 'AT+UART=' + str(SET_BAUDRATE) + ',0,0')
 
   print("Configuration routine complete")
 

@@ -13,7 +13,7 @@ import hashlib
 # BAUDRATE = 1041666
 BAUDRATE = 115200
 
-PORT = 'COM17'
+PORT = 'COM5'
 
 in_buf = bytes('', 'utf-8') # buffer de entrada de datos, el limite en windows
 # por driver es 4096 y necesitamos expandir esto
